@@ -111,6 +111,7 @@ c3<-characters_df[8:8,1:5]
 
 combine_df<-rbind(as.matrix(c1),as.matrix(c2),as.matrix(c3))
 
+row.names(combine_df) <- NULL
 pandoc.table(combine_df,style='grid')
 
 
