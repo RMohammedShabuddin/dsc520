@@ -1,0 +1,114 @@
+---
+title: "Assignment 4.1 - Student Survey"
+author: "Ramizuddin Mohammed Shabuddin"
+date: "6/24/2020"
+output:
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# set the working directory
+
+```{r echo=FALSE}
+setwd("E://Bellevue//Semester3Assignment//dsc520//data")
+getwd()
+Student_Survey <- read.csv("student-survey.csv")
+```
+
+```{r echo =FALSE}
+head(Student_Survey)
+```
+
+## 4.1.a. Use R to calculate the covariance of the Survey variables and provide an explanation of why you would use this calculation and what the results indicate.
+
+```{r}
+cov(Student_Survey)
+
+```
+Covariance is a measure to find the relationship between 2 variables or how much 2 random variables are linear variable. This helps in understanding, How one variable is related to other. Like, with increase in x value, the Y value increases or decreases.
+1. Positive covariance indicates a positive linear relationship between the variables.
+2. Negative covariance indicate a negative linear relationship between the variables.
+
+From the above table, we can notice that TimeReading and TimeTV, TimeReading and Happiness are negative covariance.Whereas, TimeTV and Happiness are positive covariance. This concludes that students are more happy when watching TV which is affecting their study time.
+
+##4.1.b Examine the Survey data variables. What measurement is being used for the variables? Explain what effect changing the measurement being used for the variables would have on the covariance calculation. Would this be a problem? Explain and provide a better alternative if needed.
+
+```{r echo =FALSE}
+str(Student_Survey)
+```
+Based on the information above, the data are as below.
+1. TimeReading is in integer format and values are in range of 1 till 6. I would think that these are in units of Hours.
+2. TimeTV is in integer format and values are in range of 50 to 95. I would think that the people spend like 50 to 95 minutes watching TV.
+3. Happiness is a number format. i think, the happiness is calculated to percentage.
+4. Gender is integer with categorical field with values of either Male or Female (0 or 1)
+
+So, The values are in different scale of units.Changing the scale of the measurement will change the covariance calculations.
+We need to make the values of same unit scale or standard unit scale. This process is called standardization 
+
+##4.1.c Choose the type of correlation test to perform, explain why you chose this test, and make a prediction if the test yields a positive or negative correlation?
+
+I will prefer the correlation method of 'pearson'. As the pearson correlation measures a linear dependence between 2 variables. From the plot below, The TimeReading and TimeTV are negatively correlated. 
+
+```{r echo= FALSE}
+library(ggplot2)
+ggplot(Student_Survey, aes(x = TimeReading, y = TimeTV, cor.method = "pearson")) + geom_point() + geom_smooth(method = lm)
+
+```
+
+
+##4.1.d Perform a correlation analysis of:
+
+##4.1.d.1 All variables
+```{r echo= FALSE}
+library("GGally")
+ggcorr(Student_Survey, label = TRUE)
+```
+
+##4.1.d.2 A single correlation between two a pair of the variables
+
+```{r, echo=FALSE}
+cor.test(Student_Survey$TimeTV, Student_Survey$TimeReading)
+```
+
+##4.1.d.3 Repeat your correlation test in step 2 but set the confidence interval at 99%
+```{r}
+cor.test(Student_Survey$TimeTV, Student_Survey$TimeReading, conf.level = 0.99)
+```
+#4.1.d.4 Describe what the calculations in the correlation matrix suggest about the relationship between the variables. Be specific with your explanation.
+
+Based on the results of above question, we notice the following information.
+t = -5.6457, df = 9, p-value = 0.0003153
+As the p-value is less than alpha. TimeReading and TimeTV have a strong negative correlation.
+
+#4.1.e Calculate the correlation coefficient and the coefficient of determination, describe what you conclude about the results.
+
+
+```{r echo = FALSE}
+cor(Student_Survey)
+```
+```{r echo = FALSE}
+cor(Student_Survey)^2
+```
+The TimeTV coefficient of determination Is 0.7798. The value indicates that TimeReading to TimeTV is significantly correlated with 77% variability. 
+
+#4.1.f Based on your analysis can you say that watching more TV caused students to read less? Explain.
+
+The correlation coefficient of TimeTV to reading TimeReading is -0.88. The negative correlation indicates that relationship is in opposite directions.
+
+#4.1.g Pick three variables and perform a partial correlation, documenting which variable you are “controlling”. Explain how this changes your interpretation and explanation of the results.
+
+```{r echo = FALSE}
+library("ggm")
+partial_corr_student_survey <- pcor(c("TimeTV", "Happiness", "Gender"), var(Student_Survey))
+partial_corr_student_survey
+partial_corr_student_survey^2
+pcor.test(partial_corr_student_survey, 1, 11)
+```
+The partial correlation between the Happiness and TV Time with Gender as controlled parameter. 
+The partial correlation is 0.64. and square of the partial correlation is show as 0.41. This indicates around 41% of TV are happy. The Gender is impacting the happiness on TimeTV. As P-value(0.04) is less than 0.5.
+
+
